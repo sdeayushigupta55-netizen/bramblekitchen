@@ -617,9 +617,9 @@ export default function Home() {
 
                 <div className="mt-7 space-y-5 text-sm">
                   <InfoLine
-                    title="Opening Hours"
-                    text={`Monday - Friday: 11:00 AM - 11:00 PM
-Saturday - Sunday: 10:00 AM - 12:00 AM`}
+                    title="Timings"
+                    text={`Opening Time - 12:00PM
+Closing Time - 1:00 AM`}
                   />
                   <InfoLine title="Location" text={loc.address} />
                   <InfoLine title="Call Us" text={loc.phones.join("\n")} />
