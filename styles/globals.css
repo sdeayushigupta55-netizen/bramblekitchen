@@ -1,0 +1,389 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===============================
+   Root Theme Variables
+================================ */
+:root{
+  color-scheme: dark;
+
+  --bg:#07090c;
+  --panel:#101418;
+  --panel2:#0c1014;
+  --border:rgba(255,255,255,.10);
+  --muted:rgba(255,255,255,.70);
+  --muted2:rgba(255,255,255,.55);
+
+  /* Accent Color (Emerald Luxury) */
+  --accent:#00C896;
+}
+
+/* ===============================
+   Base Layout
+================================ */
+html,body{ height:100%; }
+
+body{
+  background: var(--bg);
+  color:#fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container */
+.container-max{ @apply mx-auto w-full max-w-6xl px-4; }
+
+/* ===============================
+   Premium Background (Stars + vignette)
+================================ */
+.premium-dark{
+  background: var(--bg);
+  color:#fff;
+  position: relative;
+  overflow-x:hidden;
+}
+
+.premium-dark::before{
+  content:"";
+  position: fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-2;
+  background:
+    radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.55) 1px, transparent 2px),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,.45) 1px, transparent 2px),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,.55) 1px, transparent 2px),
+    radial-gradient(1px 1px at 85% 75%, rgba(255,255,255,.40) 1px, transparent 2px),
+    radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,.35) 1px, transparent 2px),
+    radial-gradient(1px 1px at 20% 55%, rgba(255,255,255,.30) 1px, transparent 2px);
+  background-size: 220px 220px;
+  opacity:.40;
+  filter: contrast(115%);
+}
+
+.premium-dark::after{
+  content:"";
+  position: fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    radial-gradient(900px 450px at 50% 10%, rgba(0,0,0,.10), rgba(0,0,0,.90));
+}
+
+/* ===============================
+   Alternating Section Backgrounds
+   Use: className="section-alt" or "section-soft"
+================================ */
+.section-alt{ position: relative; }
+.section-alt::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(850px 420px at 20% 20%, rgba(0,200,150,.14), transparent 55%),
+    radial-gradient(750px 400px at 85% 10%, rgba(255,255,255,.06), transparent 55%),
+    rgba(255,255,255,.01);
+}
+
+.section-soft{ position: relative; }
+.section-soft::before{
+  content:"";
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 420px at 70% 20%, rgba(0,200,150,.10), transparent 55%),
+    radial-gradient(900px 420px at 10% 80%, rgba(255,255,255,.05), transparent 55%),
+    rgba(255,255,255,.015);
+}
+
+/* ===============================
+   Cards
+================================ */
+.card-dark{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  border-radius:18px;
+  box-shadow:0 18px 45px rgba(0,0,0,.35);
+}
+
+.card-hover{
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+.card-hover:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.06);
+  border-color: rgba(0,200,150,.30);
+  box-shadow: 0 22px 60px rgba(0,0,0,.42);
+}
+
+/* ===============================
+   Buttons (Emerald)
+================================ */
+.btn-accent{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  padding:.82rem 1.25rem;
+  border-radius:999px;
+  background:var(--accent);
+  color:#052d24;
+  font-weight:800;
+  box-shadow:0 10px 30px rgba(0,200,150,.18);
+  transition: transform .18s ease, filter .18s ease;
+}
+.btn-accent:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+
+.btn-outline-accent{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  padding:.82rem 1.25rem;
+  border-radius:999px;
+  border:1px solid rgba(0,200,150,.65);
+  color: rgba(255,255,255,.92);
+  background:rgba(255,255,255,.02);
+  transition: background .18s ease, transform .18s ease;
+}
+.btn-outline-accent:hover{
+  background:rgba(0,200,150,.12);
+  transform:translateY(-1px);
+}
+
+.btn-ghost{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  padding:.72rem 1.1rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.85);
+  background:rgba(255,255,255,.05);
+  transition:.2s;
+}
+.btn-ghost:hover{ background:rgba(255,255,255,.08); transform:translateY(-1px); }
+
+/* ===============================
+   Inputs
+================================ */
+.input-dark{
+  width:100%;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.03);
+  padding:12px 14px;
+  color:rgba(255,255,255,.92);
+  outline:none;
+}
+.input-dark::placeholder{ color:rgba(255,255,255,.40); }
+.input-dark:focus{
+  border-color: rgba(0,200,150,.75);
+  box-shadow:0 0 0 4px rgba(0,200,150,.14);
+}
+
+/* ===============================
+   Helpers
+================================ */
+.muted{ color:var(--muted); }
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:.45rem;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);
+}
+
+.pill{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.05);
+  padding:10px 14px;
+}
+
+/* ===============================
+   Premium Noise Overlay
+================================ */
+.noise{
+  position:absolute;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+  opacity:.12;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+}
+
+/* ===============================
+   Cinematic Hero
+================================ */
+/* HERO image clarity */
+.hero-bg{
+  filter: saturate(1.12) contrast(1.08) brightness(.95);
+  transform: scale(1.03);
+}
+
+/* Emerald spotlight */
+.hero-spotlight{
+  pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 25% 35%, rgba(0,200,150,.22), transparent 60%),
+    radial-gradient(900px 520px at 75% 25%, rgba(255,255,255,.10), transparent 60%);
+}
+
+/* Reduce grain strength */
+.hero-grain{
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  opacity:.10;
+  mix-blend-mode: overlay;
+}
+
+/* Premium readable glass panel */
+.hero-panel{
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.28);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 22px;
+  box-shadow: 0 22px 70px rgba(0,0,0,.55);
+}
+
+/* Text glow to improve visibility */
+.hero-title{
+  text-shadow: 0 10px 35px rgba(0,0,0,.65);
+}
+.hero-sub{
+  text-shadow: 0 6px 22px rgba(0,0,0,.65);
+}
+
+/* Better badge visibility */
+.hero-badge{
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+/* ===============================
+   Menu Glow Cards
+================================ */
+.menu-card{
+  position: relative;
+  overflow: hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  border-radius:18px;
+  box-shadow:0 18px 45px rgba(0,0,0,.35);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+}
+.menu-card::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(420px 180px at 20% 15%, rgba(0,200,150,.22), transparent 55%);
+  opacity:0;
+  transition: opacity .25s ease;
+  pointer-events:none;
+}
+.menu-card:hover{
+  transform: translateY(-4px);
+  border-color: rgba(0,200,150,.30);
+  background: rgba(255,255,255,.06);
+  box-shadow:0 22px 65px rgba(0,0,0,.55);
+}
+.menu-card:hover::before{ opacity:1; }
+
+/* ===============================
+   Gallery Shine
+================================ */
+.gallery-card{
+  position: relative;
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.gallery-card::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.16) 50%, transparent 65%);
+  transform: translateX(-60%) rotate(10deg);
+  opacity:0;
+  transition: transform .6s ease, opacity .25s ease;
+  pointer-events:none;
+}
+.gallery-card:hover{
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(0,200,150,.26);
+  box-shadow:0 22px 60px rgba(0,0,0,.55);
+}
+.gallery-card:hover::after{
+  opacity:1;
+  transform: translateX(60%) rotate(10deg);
+}
+/* ===== Menu background helpers ===== */
+.menu-bg {
+  position: relative;
+  overflow: hidden;
+}
+.menu-bg::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(900px 520px at 20% 20%, rgba(0,200,150,.22), transparent 55%),
+    radial-gradient(900px 520px at 80% 10%, rgba(255,255,255,.08), transparent 55%),
+    rgba(0,0,0,.65);
+  pointer-events:none;
+}
+
+/* ===== Premium glass menu card ===== */
+.menu-card{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(10,14,18,.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 18px;
+  box-shadow: 0 18px 55px rgba(0,0,0,.55);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.menu-card:hover{
+  transform: translateY(-2px);
+  background: rgba(14,18,22,.68);
+  box-shadow: 0 24px 70px rgba(0,0,0,.65);
+}
+
+.menu-chip{
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,200,150,.35);
+  background: rgba(0,200,150,.10);
+  color: rgba(255,255,255,.92);
+}
+
+.price-chip{
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: rgba(255,255,255,.92);
+}
+
+/* If your image preview is too dark in cards */
+.menu-thumb{
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  border-radius: 16px;
+  overflow:hidden;
+}
