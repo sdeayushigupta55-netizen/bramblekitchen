@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -113,10 +114,12 @@ export default function Home() {
 
   const [gOpen, setGOpen] = useState(false);
   const [gIdx, setGIdx] = useState(0);
+
   const openGallery = (i) => {
     setGIdx(i);
     setGOpen(true);
   };
+
   const gPrev = () => setGIdx((p) => (p - 1 + GALLERY.length) % GALLERY.length);
   const gNext = () => setGIdx((p) => (p + 1) % GALLERY.length);
 
@@ -134,18 +137,26 @@ export default function Home() {
   const submit = async (e) => {
     e.preventDefault();
     setToast("");
-    if (!apiUrl) return setToast("❌ Add NEXT_PUBLIC_BOOKING_API in .env.local.");
+
+    if (!apiUrl) {
+      setToast("❌ Add NEXT_PUBLIC_BOOKING_API in .env.local.");
+      return;
+    }
 
     setLoading(true);
     try {
       const payload = { ...form, branch: loc.name };
+
       const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       const data = await res.json().catch(() => ({}));
+
       if (!res.ok) throw new Error(data?.message || "Booking failed");
+
       setToast("✅ Booking sent! Confirmation email sent.");
       setForm({
         name: "",
@@ -183,15 +194,45 @@ export default function Home() {
 
         {/* HERO */}
         <section id="hero" className="relative min-h-[88svh] overflow-hidden">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 h-full w-full object-cover"
-          >
-            <source src="/gallery/LaunchVideo.mp4" type="video/mp4" />
-          </video>
+         <div className="absolute inset-0">
+  {/* Mobile image */}
+  <div className="absolute inset-0 md:hidden">
+    <Image
+      src="/gallery/1.png"
+      alt="Bramble Kitchen rooftop ambience"
+      fill
+      priority
+      sizes="100vw"
+      className="object-cover"
+    />
+  </div>
+
+  {/* Desktop video */}
+  <div className="absolute inset-0 hidden md:block">
+    <Image
+      src="/gallery/hero-poster.webp"
+      alt="Bramble Kitchen rooftop ambience"
+      fill
+      priority
+      sizes="100vw"
+      className="object-cover"
+    />
+
+    <video
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      poster="/gallery/hero-poster.webp"
+      className="absolute inset-0 h-full w-full object-cover"
+      aria-hidden="true"
+    >
+      <source src="/gallery/LaunchVideo.webm" type="video/webm" />
+      <source src="/gallery/LaunchVideo.mp4" type="video/mp4" />
+    </video>
+  </div>
+</div>
 
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 hero-spotlight" />
@@ -228,6 +269,7 @@ export default function Home() {
                   <a
                     href={`tel:${LOCATIONS[0].phones[0]}`}
                     className="btn-ghost w-full sm:w-auto"
+                    aria-label="Call Bramble Kitchen now"
                   >
                     <Phone size={18} /> Call Now
                   </a>
@@ -262,11 +304,11 @@ export default function Home() {
                     outing.
                   </p>
 
-                  <div className="mt-6  gap-3 text-sm sm:grid-cols-2">
-                    <div className="pill text-white/85 mb-3">All Day Happy Hours</div>
-                    <div className="pill text-white/85 mb-3">Open Air Ambience</div>
-                    <div className="pill text-white/85 mb-3">Crafted Cocktails</div>
-                    <div className="pill text-white/85 mb-3">Limited Time Offer</div>
+                  <div className="mt-6 gap-3 text-sm sm:grid-cols-2">
+                    <div className="pill mb-3 text-white/85">All Day Happy Hours</div>
+                    <div className="pill mb-3 text-white/85">Open Air Ambience</div>
+                    <div className="pill mb-3 text-white/85">Crafted Cocktails</div>
+                    <div className="pill mb-3 text-white/85">Limited Time Offer</div>
                   </div>
 
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
@@ -283,10 +325,12 @@ export default function Home() {
                 </div>
 
                 <div className="relative min-h-[320px] sm:min-h-[700px] lg:min-h-[700px]">
-                  <img
+                  <Image
                     src="/offer2.png"
                     alt="Bramble special offer"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/25" />
                 </div>
@@ -296,15 +340,17 @@ export default function Home() {
         </section>
 
         {/* ABOUT */}
-        <section
-          id="about"
-          className="relative section-alt py-16 sm:py-20"
-          style={{
-            backgroundImage: "url('/gallery/7.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
+        <section id="about" className="relative section-alt py-16 sm:py-20">
+          <div className="absolute inset-0">
+            <Image
+              src="/gallery/7.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+
           <div className="absolute inset-0 bg-black/75" />
           <div
             className="absolute inset-0"
@@ -416,10 +462,13 @@ export default function Home() {
 
                   <div className="card-dark overflow-hidden p-3">
                     <div className="relative overflow-hidden rounded-2xl">
-                      <img
+                      <Image
                         src="/gallery/1.png"
                         alt="Bramble ambience"
-                        className="w-full object-cover transition duration-700 hover:scale-[1.03] sm:max-h-[620px] lg:max-h-[780px]"
+                        width={1200}
+                        height={1600}
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="h-auto w-full object-cover transition duration-700 hover:scale-[1.03] sm:max-h-[620px] lg:max-h-[780px]"
                       />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                     </div>
@@ -498,17 +547,20 @@ export default function Home() {
                 </div>
 
                 <div className="relative min-h-[320px] sm:min-h-[360px] lg:min-h-[520px]">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition duration-500"
-                    style={{
-                      backgroundImage: `url('${SLIDES[slide].img}')`,
-                    }}
+                  <Image
+                    src={SLIDES[slide].img}
+                    alt={SLIDES[slide].title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover transition duration-500"
                   />
                   <div className="absolute inset-0 bg-black/40" />
                 </div>
               </div>
 
               <button
+                type="button"
+                aria-label="Previous event slide"
                 onClick={prev}
                 className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 backdrop-blur transition hover:bg-black/60 sm:left-4"
               >
@@ -516,6 +568,8 @@ export default function Home() {
               </button>
 
               <button
+                type="button"
+                aria-label="Next event slide"
                 onClick={next}
                 className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/40 backdrop-blur transition hover:bg-black/60 sm:right-4"
               >
@@ -526,6 +580,8 @@ export default function Home() {
                 {SLIDES.map((_, i) => (
                   <button
                     key={i}
+                    type="button"
+                    aria-label={`Go to event slide ${i + 1}`}
                     onClick={() => setSlide(i)}
                     className="h-2.5 w-2.5 rounded-full"
                     style={{
@@ -542,15 +598,17 @@ export default function Home() {
         </section>
 
         {/* GALLERY */}
-        <section
-          id="gallery"
-          className="relative section-soft py-16 sm:py-20"
-          style={{
-            backgroundImage: "url('/gallery/2.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
+        <section id="gallery" className="relative section-soft py-16 sm:py-20">
+          <div className="absolute inset-0">
+            <Image
+              src="/gallery/2.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+
           <div className="absolute inset-0 bg-black/75" />
           <div
             className="absolute inset-0"
@@ -577,13 +635,21 @@ export default function Home() {
                 {GALLERY.map((g, i) => (
                   <Item key={g.src}>
                     <button
+                      type="button"
+                      aria-label={`Open gallery image ${i + 1}: ${g.title}`}
                       onClick={() => openGallery(i)}
-                      className="gallery-card group w-full"
+                      className="gallery-card group relative w-full overflow-hidden"
                     >
-                      <div
-                        className="aspect-square bg-cover bg-center transition duration-500 group-hover:scale-[1.07]"
-                        style={{ backgroundImage: `url('${g.src}')` }}
-                      />
+                      <div className="relative aspect-square overflow-hidden">
+                        <Image
+                          src={g.src}
+                          alt={g.alt}
+                          fill
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                          className="object-cover transition duration-500 group-hover:scale-[1.07]"
+                        />
+                      </div>
+
                       <div className="absolute inset-0 opacity-0 transition group-hover:opacity-100">
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                         <div className="absolute bottom-3 left-3 right-3 text-left">
@@ -626,10 +692,13 @@ Closing Time - 1:00 AM`}
                 </div>
 
                 <div className="mt-8 overflow-hidden rounded-xl border border-white/10">
-                  <img
+                  <Image
                     src={loc.image}
                     alt={loc.name}
-                    className="w-full object-cover"
+                    width={1200}
+                    height={700}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="h-auto w-full object-cover"
                   />
                 </div>
               </div>
@@ -647,6 +716,7 @@ Closing Time - 1:00 AM`}
                     <button
                       key={l.key}
                       type="button"
+                      aria-label={`Select location ${l.name}`}
                       onClick={() => setActiveLoc(l.key)}
                       className="rounded-full border px-5 py-2 text-sm font-semibold transition"
                       style={{
@@ -663,79 +733,114 @@ Closing Time - 1:00 AM`}
                   ))}
                 </div>
 
-                <form
-                  onSubmit={submit}
-                  className="mt-7 grid gap-3 sm:grid-cols-2"
-                >
-                  <input
-                    className="input-dark sm:col-span-2"
-                    placeholder="Your Name"
-                    name="name"
-                    required
-                    value={form.name}
-                    onChange={onChange}
-                  />
+                <form onSubmit={submit} className="mt-7 grid gap-3 sm:grid-cols-2">
+                  <div className="sm:col-span-2">
+                    <label htmlFor="name" className="mb-2 block text-sm text-white/80">
+                      Your Name
+                    </label>
+                    <input
+                      id="name"
+                      className="input-dark w-full"
+                      name="name"
+                      required
+                      value={form.name}
+                      onChange={onChange}
+                    />
+                  </div>
 
-                  <input
-                    className="input-dark sm:col-span-2"
-                    placeholder="Your Email"
-                    type="email"
-                    name="email"
-                    required
-                    value={form.email}
-                    onChange={onChange}
-                  />
+                  <div className="sm:col-span-2">
+                    <label htmlFor="email" className="mb-2 block text-sm text-white/80">
+                      Your Email
+                    </label>
+                    <input
+                      id="email"
+                      className="input-dark w-full"
+                      type="email"
+                      name="email"
+                      required
+                      value={form.email}
+                      onChange={onChange}
+                    />
+                  </div>
 
-                  <input
-                    className="input-dark sm:col-span-1"
-                    placeholder="Your Phone"
-                    name="phone"
-                    required
-                    value={form.phone}
-                    onChange={onChange}
-                  />
+                  <div className="sm:col-span-1">
+                    <label htmlFor="phone" className="mb-2 block text-sm text-white/80">
+                      Your Phone
+                    </label>
+                    <input
+                      id="phone"
+                      className="input-dark w-full"
+                      name="phone"
+                      required
+                      value={form.phone}
+                      onChange={onChange}
+                    />
+                  </div>
 
-                  <select
-                    className="input-dark sm:col-span-1"
-                    name="guests"
-                    required
-                    value={form.guests}
-                    onChange={onChange}
-                  >
-                    <option value="">Number of guests</option>
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <option key={i + 1} value={String(i + 1)}>
-                        {i + 1} Guests
-                      </option>
-                    ))}
-                  </select>
+                  <div className="sm:col-span-1">
+                    <label htmlFor="guests" className="mb-2 block text-sm text-white/80">
+                      Number of Guests
+                    </label>
+                    <select
+                      id="guests"
+                      className="input-dark w-full"
+                      name="guests"
+                      required
+                      value={form.guests}
+                      onChange={onChange}
+                    >
+                      <option value="">Number of guests</option>
+                      {Array.from({ length: 12 }).map((_, i) => (
+                        <option key={i + 1} value={String(i + 1)}>
+                          {i + 1} Guests
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-                  <input
-                    className="input-dark sm:col-span-1"
-                    type="date"
-                    min={minDate}
-                    name="date"
-                    required
-                    value={form.date}
-                    onChange={onChange}
-                  />
+                  <div className="sm:col-span-1">
+                    <label htmlFor="date" className="mb-2 block text-sm text-white/80">
+                      Date
+                    </label>
+                    <input
+                      id="date"
+                      className="input-dark w-full"
+                      type="date"
+                      min={minDate}
+                      name="date"
+                      required
+                      value={form.date}
+                      onChange={onChange}
+                    />
+                  </div>
 
-                  <input
-                    className="input-dark sm:col-span-1"
-                    type="time"
-                    name="time"
-                    required
-                    value={form.time}
-                    onChange={onChange}
-                  />
+                  <div className="sm:col-span-1">
+                    <label htmlFor="time" className="mb-2 block text-sm text-white/80">
+                      Time
+                    </label>
+                    <input
+                      id="time"
+                      className="input-dark w-full"
+                      type="time"
+                      name="time"
+                      required
+                      value={form.time}
+                      onChange={onChange}
+                    />
+                  </div>
 
-                  <textarea
-                    className="input-dark min-h-[110px] sm:col-span-2"
-                    placeholder="Special Requests (Optional)"
-                    name="note"
-                    value={form.note}
-                    onChange={onChange}
-                  />
+                  <div className="sm:col-span-2">
+                    <label htmlFor="note" className="mb-2 block text-sm text-white/80">
+                      Special Requests
+                    </label>
+                    <textarea
+                      id="note"
+                      className="input-dark min-h-[110px] w-full"
+                      name="note"
+                      value={form.note}
+                      onChange={onChange}
+                    />
+                  </div>
 
                   <button
                     disabled={loading}
@@ -756,15 +861,17 @@ Closing Time - 1:00 AM`}
         </section>
 
         {/* LOCATION */}
-        <section
-          id="location"
-          className="relative overflow-hidden py-16 sm:py-20"
-          style={{
-            backgroundImage: "url('/gallery/1.png')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
+        <section id="location" className="relative overflow-hidden py-16 sm:py-20">
+          <div className="absolute inset-0">
+            <Image
+              src="/gallery/1.png"
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+          </div>
+
           <div className="absolute inset-0 bg-black/75" />
           <div
             className="absolute inset-0"
@@ -783,6 +890,8 @@ Closing Time - 1:00 AM`}
               {LOCATIONS.map((l) => (
                 <button
                   key={l.key}
+                  type="button"
+                  aria-label={`Show location ${l.name}`}
                   onClick={() => setActiveLoc(l.key)}
                   className="rounded-full border px-5 py-2 text-sm font-semibold transition"
                   style={{
@@ -802,7 +911,7 @@ Closing Time - 1:00 AM`}
               <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur">
                 <iframe
                   key={loc.key}
-                  title="map"
+                  title={`${loc.name} map`}
                   className="h-[340px] w-full sm:h-[420px]"
                   loading="lazy"
                   src={loc.map}
@@ -878,16 +987,51 @@ Closing Time - 1:00 AM`}
 
             <div className="card-dark mx-auto mt-8 max-w-5xl p-6 md:p-10">
               <div className="grid gap-4 md:grid-cols-2">
-                <input className="input-dark" placeholder="Your Name" />
-                <input className="input-dark" placeholder="Email Address" />
+                <div>
+                  <label
+                    htmlFor="contact-name"
+                    className="mb-2 block text-sm text-white/80"
+                  >
+                    Your Name
+                  </label>
+                  <input id="contact-name" className="input-dark w-full" />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-email"
+                    className="mb-2 block text-sm text-white/80"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    className="input-dark w-full"
+                  />
+                </div>
               </div>
+
               <div className="mt-4">
-                <input className="input-dark w-full" placeholder="Subject" />
+                <label
+                  htmlFor="contact-subject"
+                  className="mb-2 block text-sm text-white/80"
+                >
+                  Subject
+                </label>
+                <input id="contact-subject" className="input-dark w-full" />
               </div>
+
               <div className="mt-4">
+                <label
+                  htmlFor="contact-message"
+                  className="mb-2 block text-sm text-white/80"
+                >
+                  Message
+                </label>
                 <textarea
+                  id="contact-message"
                   className="input-dark min-h-[150px] w-full"
-                  placeholder="Write Message..."
                 />
               </div>
 
@@ -900,12 +1044,15 @@ Closing Time - 1:00 AM`}
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <a href="#hero" className="flex items-center gap-3">
-                    <img
+                    <Image
                       className="h-10 w-auto object-contain"
                       src="/logo.png"
-                      alt="logo"
+                      alt="Bramble Kitchen logo"
+                      width={120}
+                      height={40}
                     />
                   </a>
+
                   <p className="mt-3 text-sm leading-relaxed text-white/60">
                     Premium cocktail bar & kitchen — rooftop vibes, glocal
                     flavours, and signature drinks.
@@ -916,6 +1063,7 @@ Closing Time - 1:00 AM`}
                       href="https://www.facebook.com/brambleblr/"
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label="Visit Bramble Kitchen Facebook page"
                       className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition hover:scale-110"
                     >
                       <Facebook size={18} />
@@ -925,6 +1073,7 @@ Closing Time - 1:00 AM`}
                       href="https://www.instagram.com/bramble.blr"
                       target="_blank"
                       rel="noopener noreferrer"
+                      aria-label="Visit Bramble Kitchen Instagram page"
                       className="flex h-10 w-10 items-center justify-center rounded-full text-white shadow-lg transition hover:scale-110"
                       style={{
                         background:
@@ -939,36 +1088,12 @@ Closing Time - 1:00 AM`}
                 <div>
                   <div className="font-semibold text-white/90">Useful Links</div>
                   <ul className="mt-3 space-y-2 text-sm text-white/60">
-                    <li>
-                      <a className="hover:text-white" href="#hero">
-                        Home
-                      </a>
-                    </li>
-                    <li>
-                      <a className="hover:text-white" href="#about">
-                        About
-                      </a>
-                    </li>
-                    <li>
-                      <a className="hover:text-white" href="#gallery">
-                        Gallery
-                      </a>
-                    </li>
-                    <li>
-                      <a className="hover:text-white" href="#events">
-                        Events
-                      </a>
-                    </li>
-                    <li>
-                      <a className="hover:text-white" href="#reserve">
-                        Book
-                      </a>
-                    </li>
-                    <li>
-                      <a className="hover:text-white" href="#location">
-                        Location
-                      </a>
-                    </li>
+                    <li><a className="hover:text-white" href="#hero">Home</a></li>
+                    <li><a className="hover:text-white" href="#about">About</a></li>
+                    <li><a className="hover:text-white" href="#gallery">Gallery</a></li>
+                    <li><a className="hover:text-white" href="#events">Events</a></li>
+                    <li><a className="hover:text-white" href="#reserve">Book</a></li>
+                    <li><a className="hover:text-white" href="#location">Location</a></li>
                   </ul>
                 </div>
 

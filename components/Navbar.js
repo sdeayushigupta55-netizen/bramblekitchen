@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Phone, X, Menu } from "lucide-react";
 
@@ -34,6 +35,13 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", closeOnResize);
   }, [open]);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   const closeMenu = () => setOpen(false);
 
   const linkCls =
@@ -43,34 +51,34 @@ export default function Navbar() {
     <header
       className={`sticky top-0 z-50 ${
         scrolled
-          ? "bg-black/55 backdrop-blur-xl border-b border-white/10"
+          ? "border-b border-white/10 bg-black/55 backdrop-blur-xl"
           : "bg-black/20 backdrop-blur-md"
       }`}
     >
-      {/* Promo bar */}
       <div className="bg-[var(--accent)] px-3 py-2 text-center text-[11px] font-semibold text-black sm:text-sm">
         <div className="mx-auto max-w-7xl leading-snug">
           50% OFF on Bill • All Day Happy Hours • Reserve Now
         </div>
       </div>
 
-      {/* Main nav */}
       <div className="container-max flex h-16 items-center justify-between gap-3 sm:h-[72px]">
-        {/* Logo */}
         <a
           href="#hero"
           className="flex min-w-0 items-center gap-3"
           onClick={closeMenu}
+          aria-label="Go to homepage"
         >
-          <img
+          <Image
             className="h-9 w-auto object-contain sm:h-10 md:h-11"
             src="/logo.png"
-            alt="Bramble logo"
+            alt="Bramble Kitchen logo"
+            width={140}
+            height={44}
+            priority
           />
         </a>
 
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-7">
+        <nav className="hidden items-center gap-6 lg:flex xl:gap-7" aria-label="Primary navigation">
           {NAV.map((n) => (
             <a key={n.href} href={n.href} className={linkCls}>
               {n.label}
@@ -78,11 +86,10 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Right side */}
         <div className="flex items-center gap-2 sm:gap-3">
           <a
             href="#reserve"
-            className="btn-accent hidden sm:inline-flex text-sm px-4 py-2.5 md:px-5"
+            className="btn-accent hidden px-4 py-2.5 text-sm sm:inline-flex md:px-5"
             onClick={closeMenu}
           >
             Book a Table
@@ -90,29 +97,31 @@ export default function Navbar() {
 
           <a
             href="tel:+917760565100"
-            className="hidden md:inline-flex btn-ghost text-sm"
-            aria-label="Call Bramble"
+            className="btn-ghost hidden text-sm md:inline-flex"
+            aria-label="Call Bramble Kitchen"
           >
             <Phone size={16} />
             Call
           </a>
 
-         
-          {/* Mobile toggle */}
           <button
-            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white hover:bg-white/10 transition"
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
             onClick={() => setOpen((p) => !p)}
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-menu"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile drawer */}
       {open ? (
-        <div className="lg:hidden border-t border-white/10 bg-black/85 backdrop-blur-xl">
+        <div
+          id="mobile-menu"
+          className="border-t border-white/10 bg-black/85 backdrop-blur-xl lg:hidden"
+        >
           <div className="container-max grid gap-2 py-4">
             {NAV.map((n) => (
               <a
@@ -129,7 +138,7 @@ export default function Navbar() {
               <a
                 href="#reserve"
                 onClick={closeMenu}
-                className="btn-accent w-full justify-center text-sm px-4 py-2"
+                className="btn-accent w-full justify-center px-4 py-2 text-sm"
               >
                 Book a Table
               </a>
@@ -138,6 +147,7 @@ export default function Navbar() {
                 href="tel:+917760565100"
                 onClick={closeMenu}
                 className="btn-ghost w-full justify-center"
+                aria-label="Call Bramble Kitchen now"
               >
                 <Phone size={16} />
                 Call Now
