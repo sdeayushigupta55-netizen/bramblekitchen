@@ -88,12 +88,12 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-            href="#reserve"
-            className="btn-accent hidden px-4 py-2.5 text-sm sm:inline-flex md:px-5"
-            onClick={closeMenu}
-          >
-            Book a Table
-          </a>
+  href="#reserve"
+  className="btn-accent hidden min-h-[40px] items-center justify-center whitespace-nowrap rounded-full px-3 text-xs sm:inline-flex sm:min-h-[42px] sm:px-4 sm:text-sm md:min-h-[44px] md:px-5"
+  onClick={closeMenu}
+>
+  Book a Table
+</a>
 
           <a
             href="tel:+917760565100"

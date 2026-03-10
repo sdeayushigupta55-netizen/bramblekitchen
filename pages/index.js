@@ -210,7 +210,7 @@ export default function Home() {
   {/* Desktop video */}
   <div className="absolute inset-0 hidden md:block">
     <Image
-      src="/gallery/hero-poster.webp"
+      // src="/gallery/hero-poster.webp"
       alt="Bramble Kitchen rooftop ambience"
       fill
       priority
@@ -224,7 +224,7 @@ export default function Home() {
       loop
       playsInline
       preload="metadata"
-      poster="/gallery/hero-poster.webp"
+      // poster="/gallery/hero-poster.webp"
       className="absolute inset-0 h-full w-full object-cover"
       aria-hidden="true"
     >
