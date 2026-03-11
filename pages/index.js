@@ -1115,7 +1115,7 @@ Closing Time - 1:00 AM`}
                     <div className="font-semibold text-white/80">
                       Marathahalli
                     </div>
-                    Panathur Main Rd, Kadubeesanahalli, Bengaluru
+                    Panathur Main Rd, Kadubeesanahalli, Bengaluru, 560087
                     <br />
                     <span className="text-white/80">Phone:</span> +917760565100
                     <br />
