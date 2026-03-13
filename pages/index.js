@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Lightbox from "@/components/Lightbox";
@@ -22,7 +22,17 @@ import {
 
 const GALLERY = Array.from({ length: 8 }).map((_, i) => ({
   src: `/gallery/${i + 1}.png`,
-  alt: `Gallery ${i + 1}`,
+  alt:
+    [
+      "Bramble rooftop bar Marathahalli Bangalore",
+      "Signature cocktails at Bramble Kitchen & Bar Bangalore",
+      "Glocal cuisine at Bramble rooftop restaurant Bangalore",
+      "Live ambience at Bramble Kitchen & Bar Marathahalli",
+      "Nightlife at Bramble rooftop bar Bangalore",
+      "Food bites at Bramble Kitchen & Bar Bangalore",
+      "Elegant interiors at Bramble Kitchen & Bar",
+      "Weekend rooftop energy at Bramble Marathahalli",
+    ][i] || `Bramble Kitchen & Bar gallery image ${i + 1}`,
   title:
     [
       "Rooftop Vibes",
@@ -41,10 +51,12 @@ const LOCATIONS = [
     key: "marathahalli",
     name: "Bramble Marathahalli",
     address:
-      "Panathur Main Rd, Kadubeesanahalli, Panathur, Bengaluru, Karnataka 560103",
-    phones: ["+917760565100", "+917626974629"],
+      "Panathur Main Rd, Kadubeesanahalli, Panathur, Bengaluru, Karnataka 560087",
+    phones: ["+917626974629"],
     image: "/locations/marathahalli.png",
-    map: "https://www.google.com/maps?q=Panathur%20Main%20Rd%20Kadubeesanahalli%20Bengaluru&output=embed",
+    map: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.549431466336!2d77.7037178!3d12.936655000000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae13a2b1b5cc29%3A0xd4b44af926c5e64f!2sBramble%20Kitchen%20%26%20Bar!5e0!3m2!1sen!2sin!4v1773413832129!5m2!1sen!2sin",
+    directions:
+      "https://maps.google.com/?q=Bramble%20Kitchen%20%26%20Bar%20Bengaluru",
   },
 ];
 
@@ -91,8 +103,7 @@ export default function Home() {
   const restroName =
     process.env.NEXT_PUBLIC_RESTRO_NAME || "Bramble Kitchen & Bar";
   const email =
-    process.env.NEXT_PUBLIC_RESTRO_EMAIL || "bramblekitchenandbar@gmail.com";
-  const apiUrl = process.env.NEXT_PUBLIC_BOOKING_API || "";
+    process.env.NEXT_PUBLIC_RESTRO_EMAIL || "bramblekitchenandbar02@gmail.com";
 
   const [activeLoc, setActiveLoc] = useState(LOCATIONS[0].key);
   const loc = useMemo(
@@ -100,20 +111,40 @@ export default function Home() {
     [activeLoc]
   );
 
-  const [toast, setToast] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    guests: "",
-    date: "",
-    time: "",
-    note: "",
-  });
+  const whatsappNumber = "917626974629";
+
+  const bookTableWhatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    `Hello ${restroName} 👋
+
+I would like to reserve a table.
+
+Please let me know the available time slots.
+
+Thank you.`
+  )}`;
+
+  const whatsappLink = bookTableWhatsapp;
+  const callLink = `tel:${LOCATIONS[0].phones[0]}`;
 
   const [gOpen, setGOpen] = useState(false);
   const [gIdx, setGIdx] = useState(0);
+  const [slide, setSlide] = useState(0);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true") {
+      setSuccess(true);
+
+      setTimeout(() => {
+        const cleanUrl =
+          window.location.origin + window.location.pathname + "#contact";
+        window.history.replaceState({}, document.title, cleanUrl);
+      }, 100);
+    }
+  }, []);
 
   const openGallery = (i) => {
     setGIdx(i);
@@ -122,70 +153,64 @@ export default function Home() {
 
   const gPrev = () => setGIdx((p) => (p - 1 + GALLERY.length) % GALLERY.length);
   const gNext = () => setGIdx((p) => (p + 1) % GALLERY.length);
-
-  const minDate = useMemo(() => {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  }, []);
-
-  const onChange = (e) =>
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setToast("");
-
-    if (!apiUrl) {
-      setToast("❌ Add NEXT_PUBLIC_BOOKING_API in .env.local.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const payload = { ...form, branch: loc.name };
-
-      const res = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) throw new Error(data?.message || "Booking failed");
-
-      setToast("✅ Booking sent! Confirmation email sent.");
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        guests: "",
-        date: "",
-        time: "",
-        note: "",
-      });
-    } catch (err) {
-      setToast("❌ " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [slide, setSlide] = useState(0);
   const prev = () => setSlide((p) => (p - 1 + SLIDES.length) % SLIDES.length);
   const next = () => setSlide((p) => (p + 1) % SLIDES.length);
 
   return (
     <>
       <Head>
-        <title>{restroName} • Restaurant</title>
+        <title>
+          Bramble Kitchen & Bar | Rooftop Bar in Marathahalli Bangalore | Cocktails & Happy Hours
+        </title>
         <link rel="icon" href="/favicon.ico" />
+
         <meta
           name="description"
-          content="Restaurant landing page with menu and table booking."
+          content="Experience rooftop dining at Bramble Kitchen & Bar in Marathahalli Bangalore. Enjoy crafted cocktails, glocal cuisine, open-air ambience and happy hours. Reserve your table today."
+        />
+        <meta name="robots" content="index, follow" />
+        <meta
+          name="keywords"
+          content="rooftop bar marathahalli, bar near panathur bangalore, rooftop restaurant bangalore, cocktail bar marathahalli, happy hours bangalore, rooftop dining bangalore, pub near kadubeesanahalli, bar near bellandur"
+        />
+
+        <meta
+          property="og:title"
+          content="Bramble Kitchen & Bar | Rooftop Bar in Marathahalli Bangalore"
+        />
+        <meta
+          property="og:description"
+          content="Rooftop dining, cocktails, nightlife and happy hours at Bramble Kitchen & Bar in Marathahalli Bangalore."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.bramblethebar.com" />
+        <meta
+          property="og:image"
+          content="https://www.bramblethebar.com/og-image.jpg"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Restaurant",
+              name: "Bramble Kitchen & Bar",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Panathur Main Rd, Kadubeesanahalli",
+                addressLocality: "Bengaluru",
+                addressRegion: "Karnataka",
+                postalCode: "560087",
+                addressCountry: "IN",
+              },
+              telephone: "+91 7760565100",
+              servesCuisine: "Indian, Asian, Mediterranean",
+              priceRange: "₹₹",
+              openingHours: "Mo-Su 12:00-01:00",
+            }),
+          }}
         />
       </Head>
 
@@ -194,45 +219,41 @@ export default function Home() {
 
         {/* HERO */}
         <section id="hero" className="relative min-h-[88svh] overflow-hidden">
-         <div className="absolute inset-0">
-  {/* Mobile image */}
-  <div className="absolute inset-0 md:hidden">
-    <Image
-      src="/gallery/1.png"
-      alt="Bramble Kitchen rooftop ambience"
-      fill
-      priority
-      sizes="100vw"
-      className="object-cover"
-    />
-  </div>
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 md:hidden">
+              <Image
+                src="/gallery/1.png"
+                alt="Bramble rooftop bar Marathahalli Bangalore"
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
 
-  {/* Desktop video */}
-  <div className="absolute inset-0 hidden md:block">
-    <Image
-      // src="/gallery/hero-poster.webp"
-      alt="Bramble Kitchen rooftop ambience"
-      fill
-      priority
-      sizes="100vw"
-      className="object-cover"
-    />
+            <div className="absolute inset-0 hidden md:block">
+              <Image
+                alt="Bramble Kitchen & Bar rooftop ambience"
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
 
-    <video
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      // poster="/gallery/hero-poster.webp"
-      className="absolute inset-0 h-full w-full object-cover"
-      aria-hidden="true"
-    >
-      <source src="/gallery/LaunchVideo.webm" type="video/webm" />
-      <source src="/gallery/LaunchVideo.mp4" type="video/mp4" />
-    </video>
-  </div>
-</div>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 h-full w-full object-cover"
+                aria-hidden="true"
+              >
+                <source src="/gallery/LaunchVideo.webm" type="video/webm" />
+                <source src="/gallery/LaunchVideo.mp4" type="video/mp4" />
+              </video>
+            </div>
+          </div>
 
           <div className="absolute inset-0 bg-black/45" />
           <div className="absolute inset-0 hero-spotlight" />
@@ -251,9 +272,14 @@ export default function Home() {
                   <Sparkles size={14} /> Rooftop • Cocktails • Glocal Cuisine
                 </div>
 
-                <h1 className="hero-title text-4xl font-semibold tracking-tight sm:text-5xl md:text-6xl">
-                  Bramble Kitchen{" "}
-                  <span style={{ color: "var(--accent)" }}>& Bar</span>
+                <h1 className="hero-title text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl">
+                  <span className="text-white">Bramble Kitchen & Bar</span>
+                  <span className="text-white/70"> — </span>
+                  <span style={{ color: "var(--accent)" }}>Rooftop Dining</span>
+                  <span className="text-white/80"> • </span>
+                  <span className="text-white/90">Crafted Cocktails</span>
+                  <span className="text-white/80"> • </span>
+                  <span style={{ color: "var(--accent)" }}>Nightlife</span>
                 </h1>
 
                 <p className="hero-sub mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg">
@@ -262,12 +288,17 @@ export default function Home() {
                 </p>
 
                 <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                  <a href="#reserve" className="btn-outline-accent w-full sm:w-auto">
-                    Reservation
+                  <a
+                    href={bookTableWhatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-accent w-full sm:w-auto"
+                  >
+                    Book a Table
                   </a>
 
                   <a
-                    href={`tel:${LOCATIONS[0].phones[0]}`}
+                    href={callLink}
                     className="btn-ghost w-full sm:w-auto"
                     aria-label="Call Bramble Kitchen now"
                   >
@@ -289,9 +320,9 @@ export default function Home() {
             <div className="card-dark overflow-hidden">
               <div className="grid lg:grid-cols-2">
                 <div className="p-6 text-white sm:p-8 md:p-10">
-                  <div className="text-xs tracking-[0.18em] text-white/60 sm:text-sm">
+                  <h2 className="text-xs tracking-[0.18em] text-white/60 sm:text-sm">
                     SPECIAL OFFER
-                  </div>
+                  </h2>
 
                   <h2 className="mt-3 text-3xl font-semibold leading-tight sm:text-4xl md:text-5xl">
                     <span style={{ color: "var(--accent)" }}>50% OFF</span> on
@@ -305,14 +336,27 @@ export default function Home() {
                   </p>
 
                   <div className="mt-6 gap-3 text-sm sm:grid-cols-2">
-                    <div className="pill mb-3 text-white/85">All Day Happy Hours</div>
-                    <div className="pill mb-3 text-white/85">Open Air Ambience</div>
-                    <div className="pill mb-3 text-white/85">Crafted Cocktails</div>
-                    <div className="pill mb-3 text-white/85">Limited Time Offer</div>
+                    <div className="pill mb-3 text-white/85">
+                      All Day Happy Hours
+                    </div>
+                    <div className="pill mb-3 text-white/85">
+                      Open Air Ambience
+                    </div>
+                    <div className="pill mb-3 text-white/85">
+                      Crafted Cocktails
+                    </div>
+                    <div className="pill mb-3 text-white/85">
+                      Limited Time Offer
+                    </div>
                   </div>
 
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-                    <a href="#reserve" className="btn-accent w-full sm:w-auto">
+                    <a
+                      href={bookTableWhatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-accent w-full sm:w-auto"
+                    >
                       Reserve Now
                     </a>
                   </div>
@@ -327,7 +371,7 @@ export default function Home() {
                 <div className="relative min-h-[320px] sm:min-h-[700px] lg:min-h-[700px]">
                   <Image
                     src="/offer2.png"
-                    alt="Bramble special offer"
+                    alt="Bramble special offer happy hours Bangalore"
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
@@ -344,7 +388,7 @@ export default function Home() {
           <div className="absolute inset-0">
             <Image
               src="/gallery/7.png"
-              alt=""
+              alt="Bramble Kitchen & Bar rooftop ambience in Marathahalli"
               fill
               sizes="100vw"
               className="object-cover"
@@ -431,13 +475,21 @@ export default function Home() {
                   </div>
 
                   <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-                    <a className="btn-outline-accent w-full sm:w-auto" href="#gallery">
+                    <a
+                      className="btn-outline-accent w-full sm:w-auto"
+                      href="#gallery"
+                    >
                       See Gallery
                     </a>
                     <a className="btn-ghost w-full sm:w-auto" href="#events">
                       Private Events
                     </a>
-                    <a className="btn-accent w-full sm:w-auto" href="#reserve">
+                    <a
+                      className="btn-accent w-full sm:w-auto"
+                      href={bookTableWhatsapp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <CalendarCheck size={18} />
                       Reserve
                     </a>
@@ -464,7 +516,7 @@ export default function Home() {
                     <div className="relative overflow-hidden rounded-2xl">
                       <Image
                         src="/gallery/1.png"
-                        alt="Bramble ambience"
+                        alt="Bramble rooftop ambience and cocktails in Bangalore"
                         width={1200}
                         height={1600}
                         sizes="(max-width: 1024px) 100vw, 50vw"
@@ -538,7 +590,12 @@ export default function Home() {
                       </p>
 
                       <div className="mt-8">
-                        <a href="#reserve" className="btn-accent text-sm">
+                        <a
+                          href={bookTableWhatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-accent text-sm"
+                        >
                           Book Event
                         </a>
                       </div>
@@ -602,7 +659,7 @@ export default function Home() {
           <div className="absolute inset-0">
             <Image
               src="/gallery/2.png"
-              alt=""
+              alt="Bramble cocktail bar and rooftop gallery Bangalore"
               fill
               sizes="100vw"
               className="object-cover"
@@ -669,203 +726,123 @@ export default function Home() {
           </div>
         </section>
 
-        {/* BOOKING */}
-        <section id="reserve" className="relative overflow-hidden py-16 sm:py-20">
-          <div className="container-max relative">
-            <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
-              <div className="text-white">
-                <h2 className="text-3xl font-semibold">Book Your Table</h2>
+  {/* BOOKING */}
+<section id="reserve" className="relative overflow-hidden py-14 sm:py-20">
+  <div className="container-max relative">
+    <div className="grid gap-8 lg:grid-cols-2">
 
-                <p className="mt-3 max-w-lg leading-relaxed text-white/70">
-                  Reserve your table in seconds. You’ll receive a confirmation
-                  email once your booking is submitted.
-                </p>
+      {/* LEFT CARD */}
+      <div className="card-dark p-6 sm:p-8 md:p-10">
+        <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-white/40">
+          Reservation
+        </p>
 
-                <div className="mt-7 space-y-5 text-sm">
-                  <InfoLine
-                    title="Timings"
-                    text={`Opening Time - 12:00PM
-Closing Time - 1:00 AM`}
-                  />
-                  <InfoLine title="Location" text={loc.address} />
-                  <InfoLine title="Call Us" text={loc.phones.join("\n")} />
-                </div>
+        <h2 className="mt-3 text-2xl font-semibold text-emerald-300 sm:text-3xl md:text-4xl">
+          Book Your Table
+        </h2>
 
-                <div className="mt-8 overflow-hidden rounded-xl border border-white/10">
-                  <Image
-                    src={loc.image}
-                    alt={loc.name}
-                    width={1200}
-                    height={700}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className="h-auto w-full object-cover"
-                  />
-                </div>
-              </div>
+        <p className="mt-4 max-w-lg text-sm sm:text-base leading-relaxed text-white/70">
+          Enjoy rooftop dining, crafted cocktails, and a premium ambience.
+          Reserve your table instantly through WhatsApp and our team will
+          confirm your booking.
+        </p>
 
-              <div className="card-dark p-6 text-white sm:p-7 md:p-9">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold">Book A Table</h3>
-                  <p className="mt-1 text-sm text-white/60">
-                    Please fill the form below to make a reservation
-                  </p>
-                </div>
-
-                <div className="mt-6 flex flex-wrap justify-center gap-3">
-                  {LOCATIONS.map((l) => (
-                    <button
-                      key={l.key}
-                      type="button"
-                      aria-label={`Select location ${l.name}`}
-                      onClick={() => setActiveLoc(l.key)}
-                      className="rounded-full border px-5 py-2 text-sm font-semibold transition"
-                      style={{
-                        borderColor: "rgba(255,255,255,.10)",
-                        background:
-                          activeLoc === l.key
-                            ? "rgba(0,200,150,.18)"
-                            : "rgba(255,255,255,.04)",
-                        color: "rgba(255,255,255,.88)",
-                      }}
-                    >
-                      {l.name}
-                    </button>
-                  ))}
-                </div>
-
-                <form onSubmit={submit} className="mt-7 grid gap-3 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <label htmlFor="name" className="mb-2 block text-sm text-white/80">
-                      Your Name
-                    </label>
-                    <input
-                      id="name"
-                      className="input-dark w-full"
-                      name="name"
-                      required
-                      value={form.name}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="email" className="mb-2 block text-sm text-white/80">
-                      Your Email
-                    </label>
-                    <input
-                      id="email"
-                      className="input-dark w-full"
-                      type="email"
-                      name="email"
-                      required
-                      value={form.email}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-1">
-                    <label htmlFor="phone" className="mb-2 block text-sm text-white/80">
-                      Your Phone
-                    </label>
-                    <input
-                      id="phone"
-                      className="input-dark w-full"
-                      name="phone"
-                      required
-                      value={form.phone}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-1">
-                    <label htmlFor="guests" className="mb-2 block text-sm text-white/80">
-                      Number of Guests
-                    </label>
-                    <select
-                      id="guests"
-                      className="input-dark w-full"
-                      name="guests"
-                      required
-                      value={form.guests}
-                      onChange={onChange}
-                    >
-                      <option value="">Number of guests</option>
-                      {Array.from({ length: 12 }).map((_, i) => (
-                        <option key={i + 1} value={String(i + 1)}>
-                          {i + 1} Guests
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-1">
-                    <label htmlFor="date" className="mb-2 block text-sm text-white/80">
-                      Date
-                    </label>
-                    <input
-                      id="date"
-                      className="input-dark w-full"
-                      type="date"
-                      min={minDate}
-                      name="date"
-                      required
-                      value={form.date}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-1">
-                    <label htmlFor="time" className="mb-2 block text-sm text-white/80">
-                      Time
-                    </label>
-                    <input
-                      id="time"
-                      className="input-dark w-full"
-                      type="time"
-                      name="time"
-                      required
-                      value={form.time}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label htmlFor="note" className="mb-2 block text-sm text-white/80">
-                      Special Requests
-                    </label>
-                    <textarea
-                      id="note"
-                      className="input-dark min-h-[110px] w-full"
-                      name="note"
-                      value={form.note}
-                      onChange={onChange}
-                    />
-                  </div>
-
-                  <button
-                    disabled={loading}
-                    className="btn-accent mt-1 w-full sm:col-span-2"
-                  >
-                    {loading ? "Sending..." : "Book Now"}
-                  </button>
-                </form>
-
-                {toast && (
-                  <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80">
-                    {toast}
-                  </div>
-                )}
-              </div>
+        {/* INFO GRID */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-sm font-semibold text-white">
+              Timings
+            </div>
+            <div className="mt-2 text-sm text-white/65">
+              Opening Time - 12:00 PM
+              <br />
+              Closing Time - 1:00 AM
             </div>
           </div>
-        </section>
+
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+            <div className="text-sm font-semibold text-white">
+              Call Us
+            </div>
+            <div className="mt-2 text-sm text-white/65">
+              {loc.phones.join(", ")}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:col-span-2">
+            <div className="text-sm font-semibold text-white">
+              Location
+            </div>
+            <div className="mt-2 text-sm text-white/65">
+              {loc.address}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* RIGHT CARD */}
+      <div className="card-dark flex flex-col items-center justify-center p-6 sm:p-8 md:p-10 text-center">
+
+        <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-green-500/15">
+          <svg viewBox="0 0 32 32" className="h-7 w-7 sm:h-8 sm:w-8 fill-green-400">
+            <path d="M16 .396C7.163.396 0 7.56 0 16.396c0 2.887.76 5.594 2.094 7.938L.066 32l7.864-2.062A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837.396 16 .396z" />
+          </svg>
+        </div>
+
+        <h3 className="mt-5 text-xl sm:text-2xl font-semibold text-white">
+          Book A Table on WhatsApp
+        </h3>
+
+        <p className="mt-3 max-w-sm text-sm text-white/65">
+          Tap the button below to connect with our team instantly and reserve
+          your table in seconds.
+        </p>
+
+        {/* WHATSAPP BUTTON */}
+        <a
+          href={bookTableWhatsapp}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 w-full sm:w-auto rounded-xl bg-green-500 px-8 py-3 text-sm font-semibold text-white transition hover:bg-green-600"
+        >
+          Book Table on WhatsApp
+        </a>
+
+        {/* ACTION BUTTONS */}
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
+          <a
+            href={callLink}
+            className="btn-ghost w-full sm:w-auto justify-center"
+            aria-label="Call Bramble Kitchen now"
+          >
+            <Phone size={18} /> Call Now
+          </a>
+
+          <a
+            href={loc.directions}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline-accent w-full sm:w-auto justify-center"
+          >
+            <MapPin size={18} /> Get Directions
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
         {/* LOCATION */}
         <section id="location" className="relative overflow-hidden py-16 sm:py-20">
           <div className="absolute inset-0">
             <Image
               src="/gallery/1.png"
-              alt=""
+              alt="Bramble rooftop bar location in Marathahalli Bangalore"
               fill
               sizes="100vw"
               className="object-cover"
@@ -883,7 +860,7 @@ Closing Time - 1:00 AM`}
 
           <div className="container-max relative text-white">
             <div className="text-center">
-              <div className="text-3xl font-semibold md:text-4xl">Location</div>
+              <h2 className="text-3xl font-semibold md:text-4xl">Location</h2>
             </div>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -959,14 +936,16 @@ Closing Time - 1:00 AM`}
                 </div>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-                  <a href="#reserve" className="btn-accent flex-1 text-center text-sm">
-                    Make Reservation
+                  <a
+                    href={bookTableWhatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline-accent w-full sm:w-auto"
+                  >
+                    Book a Table
                   </a>
 
-                  <a
-                    href="#contact"
-                    className="btn-outline-accent flex-1 text-center text-sm"
-                  >
+                  <a href="#contact" className="btn-outline-accent w-full sm:w-auto">
                     Contact Us
                   </a>
                 </div>
@@ -981,63 +960,87 @@ Closing Time - 1:00 AM`}
             <div className="text-center text-3xl font-semibold">
               Get in Touch
             </div>
+
             <div className="mt-2 text-center text-white/60">
               For reservations & events, reach us anytime.
             </div>
 
-            <div className="card-dark mx-auto mt-8 max-w-5xl p-6 md:p-10">
+            {success && (
+              <div className="mx-auto mt-6 max-w-5xl rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-center text-green-400">
+                ✅ Message sent successfully! Our team will get back to you shortly.
+              </div>
+            )}
+
+            <form
+              action="https://formsubmit.co/vedicventures@zohomail.in"
+              method="POST"
+              className="card-dark mx-auto mt-8 max-w-5xl p-6 md:p-10"
+            >
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
+              <input
+                type="hidden"
+                name="_next"
+                value="https://www.bramblethebar.com/?success=true#contact"
+              />
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="contact-name"
-                    className="mb-2 block text-sm text-white/80"
-                  >
+                  <label className="mb-2 block text-sm text-white/80">
                     Your Name
                   </label>
-                  <input id="contact-name" className="input-dark w-full" />
+                  <input name="name" className="input-dark w-full" required />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="contact-email"
-                    className="mb-2 block text-sm text-white/80"
-                  >
+                  <label className="mb-2 block text-sm text-white/80">
                     Email Address
                   </label>
                   <input
-                    id="contact-email"
                     type="email"
+                    name="email"
                     className="input-dark w-full"
+                    required
                   />
                 </div>
               </div>
 
               <div className="mt-4">
-                <label
-                  htmlFor="contact-subject"
-                  className="mb-2 block text-sm text-white/80"
-                >
+                <label className="mb-2 block text-sm text-white/80">
                   Subject
                 </label>
-                <input id="contact-subject" className="input-dark w-full" />
+                <input name="subject" className="input-dark w-full" required />
               </div>
 
               <div className="mt-4">
-                <label
-                  htmlFor="contact-message"
-                  className="mb-2 block text-sm text-white/80"
-                >
+                <label className="mb-2 block text-sm text-white/80">
                   Message
                 </label>
                 <textarea
-                  id="contact-message"
+                  name="message"
                   className="input-dark min-h-[150px] w-full"
+                  required
                 />
               </div>
 
               <div className="mt-7 flex justify-center">
-                <button className="btn-accent px-10 text-sm">SEND MESSAGE</button>
+                <button type="submit" className="btn-accent px-10 text-sm">
+                  SEND MESSAGE
+                </button>
               </div>
+            </form>
+
+            <div className="mx-auto mb-12 mt-14 max-w-4xl text-center">
+              <h2 className="text-2xl font-semibold text-white">
+                Best Rooftop Bar in Marathahalli Bangalore
+              </h2>
+              <p className="mt-4 text-white/65">
+                Bramble Kitchen & Bar is one of the best rooftop bars in
+                Marathahalli Bangalore offering crafted cocktails, rooftop dining
+                and glocal cuisine. Located on Panathur Main Road near
+                Kadubeesanahalli and Bellandur, Bramble is a popular destination
+                for happy hours, birthday celebrations and nightlife.
+              </p>
             </div>
 
             <footer className="mt-14 border-t border-white/10 pt-10 text-white/70">
@@ -1088,12 +1091,36 @@ Closing Time - 1:00 AM`}
                 <div>
                   <div className="font-semibold text-white/90">Useful Links</div>
                   <ul className="mt-3 space-y-2 text-sm text-white/60">
-                    <li><a className="hover:text-white" href="#hero">Home</a></li>
-                    <li><a className="hover:text-white" href="#about">About</a></li>
-                    <li><a className="hover:text-white" href="#gallery">Gallery</a></li>
-                    <li><a className="hover:text-white" href="#events">Events</a></li>
-                    <li><a className="hover:text-white" href="#reserve">Book</a></li>
-                    <li><a className="hover:text-white" href="#location">Location</a></li>
+                    <li>
+                      <a className="hover:text-white" href="#hero">
+                        Home
+                      </a>
+                    </li>
+                    <li>
+                      <a className="hover:text-white" href="#about">
+                        About
+                      </a>
+                    </li>
+                    <li>
+                      <a className="hover:text-white" href="#gallery">
+                        Gallery
+                      </a>
+                    </li>
+                    <li>
+                      <a className="hover:text-white" href="#events">
+                        Events
+                      </a>
+                    </li>
+                    <li>
+                      <a className="hover:text-white" href="#reserve">
+                        Book
+                      </a>
+                    </li>
+                    <li>
+                      <a className="hover:text-white" href="#location">
+                        Location
+                      </a>
+                    </li>
                   </ul>
                 </div>
 
@@ -1117,9 +1144,9 @@ Closing Time - 1:00 AM`}
                     </div>
                     Panathur Main Rd, Kadubeesanahalli, Bengaluru, 560087
                     <br />
-                    <span className="text-white/80">Phone:</span> +917760565100
-                    <br />
                     <span className="text-white/80">Phone:</span> +917626974629
+                    <br />
+                    <span className="text-white/80">Phone:</span> +917760565100
                   </div>
 
                   <div className="mt-4 text-sm text-white/60">
@@ -1135,6 +1162,39 @@ Closing Time - 1:00 AM`}
           </div>
         </section>
 
+        {/* FLOATING CALL + WHATSAPP BUTTONS */}
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 px-4">
+          <div className="flex items-center justify-between">
+            <a
+              href={callLink}
+              aria-label="Call Restaurant"
+              className="pointer-events-auto group relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-[#00c896] to-[#00e0a3] text-white shadow-[0_10px_30px_rgba(59,130,246,0.45)] transition duration-300 hover:scale-110"
+            >
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-30"></span>
+              <span className="absolute inline-flex h-full w-full rounded-full border border-white/20"></span>
+              <Phone size={28} className="relative z-10" />
+            </a>
+
+            <a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat on WhatsApp"
+              className="pointer-events-auto group relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-[0_10px_30px_rgba(34,197,94,0.45)] transition duration-300 hover:scale-110"
+            >
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-30"></span>
+              <span className="absolute inline-flex h-full w-full rounded-full border border-white/20"></span>
+              <svg
+                viewBox="0 0 32 32"
+                className="relative z-10 h-7 w-7 fill-current"
+                aria-hidden="true"
+              >
+                <path d="M16 .396C7.163.396 0 7.56 0 16.396c0 2.887.76 5.594 2.094 7.938L.066 32l7.864-2.062A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837.396 16 .396zm0 29.29a13.2 13.2 0 01-6.726-1.83l-.482-.285-4.67 1.225 1.247-4.552-.314-.47A13.2 13.2 0 1129.2 16c0 7.282-5.918 13.686-13.2 13.686zm7.254-9.996c-.396-.198-2.34-1.156-2.7-1.287-.36-.132-.624-.198-.888.198-.264.396-1.02 1.287-1.25 1.552-.228.264-.456.297-.852.099-.396-.198-1.674-.618-3.186-1.97-1.177-1.05-1.972-2.35-2.205-2.746-.228-.396-.024-.61.173-.808.177-.177.396-.456.594-.684.198-.228.264-.396.396-.66.132-.264.066-.495-.033-.693-.099-.198-.888-2.145-1.217-2.94-.32-.768-.646-.663-.888-.675l-.756-.014c-.264 0-.693.099-1.056.495-.363.396-1.386 1.353-1.386 3.3s1.419 3.825 1.617 4.089c.198.264 2.79 4.26 6.762 5.973.946.408 1.683.652 2.258.834.949.302 1.813.259 2.495.157.761-.114 2.34-.957 2.673-1.881.33-.924.33-1.716.231-1.881-.099-.165-.363-.264-.759-.462z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
         <Lightbox
           open={gOpen}
           images={GALLERY}
@@ -1145,14 +1205,5 @@ Closing Time - 1:00 AM`}
         />
       </div>
     </>
-  );
-}
-
-function InfoLine({ title, text }) {
-  return (
-    <div>
-      <div className="font-semibold text-white/90">{title}</div>
-      <div className="whitespace-pre-line text-white/60">{text}</div>
-    </div>
   );
 }

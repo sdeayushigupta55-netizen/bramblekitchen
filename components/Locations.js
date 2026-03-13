@@ -16,7 +16,7 @@ const LOCATIONS = [
     name: "Bramble Marathahalli",
     address: "Panathur Main Rd, Kadubeesanahalli, Panathur, Bengaluru, Karnataka 560087",
     reservations: "zomato.com",
-    phones: ["+917760565100", "+917626974629"],
+    phones: ["+917626974629","+917760565100"],
     image: "/locations/marathahalli.png",
   },
 ];

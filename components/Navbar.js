@@ -47,9 +47,21 @@ export default function Navbar() {
   const linkCls =
     "text-sm text-white/75 hover:text-white transition whitespace-nowrap";
 
+  const whatsappNumber = "917626974629";
+
+  const bookTableWhatsapp = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    `Hello Bramble Kitchen & Bar 👋
+
+I would like to reserve a table.
+
+Please let me know the available time slots.
+
+Thank you.`
+  )}`;
+
   return (
     <header
-      className={`sticky top-0 z-50 ${
+      className={`fixed top-0 left-0 right-0 z-50 ${
         scrolled
           ? "border-b border-white/10 bg-black/55 backdrop-blur-xl"
           : "bg-black/20 backdrop-blur-md"
@@ -78,7 +90,10 @@ export default function Navbar() {
           />
         </a>
 
-        <nav className="hidden items-center gap-6 lg:flex xl:gap-7" aria-label="Primary navigation">
+        <nav
+          className="hidden items-center gap-6 lg:flex xl:gap-7"
+          aria-label="Primary navigation"
+        >
           {NAV.map((n) => (
             <a key={n.href} href={n.href} className={linkCls}>
               {n.label}
@@ -88,15 +103,17 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-  href="#reserve"
-  className="btn-accent hidden min-h-[40px] items-center justify-center whitespace-nowrap rounded-full px-3 text-xs sm:inline-flex sm:min-h-[42px] sm:px-4 sm:text-sm md:min-h-[44px] md:px-5"
-  onClick={closeMenu}
->
-  Book a Table
-</a>
+            href={bookTableWhatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+            className="btn-accent w-full justify-center px-4 py-2 text-sm"
+          >
+            Book a Table
+          </a>
 
           <a
-            href="tel:+917760565100"
+            href="tel:+917626974629"
             className="btn-ghost hidden text-sm md:inline-flex"
             aria-label="Call Bramble Kitchen"
           >
@@ -136,7 +153,9 @@ export default function Navbar() {
 
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               <a
-                href="#reserve"
+                href={bookTableWhatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={closeMenu}
                 className="btn-accent w-full justify-center px-4 py-2 text-sm"
               >
@@ -144,7 +163,7 @@ export default function Navbar() {
               </a>
 
               <a
-                href="tel:+917760565100"
+                href="tel:+917626974629"
                 onClick={closeMenu}
                 className="btn-ghost w-full justify-center"
                 aria-label="Call Bramble Kitchen now"

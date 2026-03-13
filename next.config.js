@@ -2,8 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
+  output: "export",   // This creates static export
   images: {
-    formats: ["image/avif", "image/webp"],
+    unoptimized: true, // required for static export
   },
 };
 
