@@ -53,7 +53,7 @@ export default function Lightbox({
           >
             <div className="relative aspect-[4/3]">
               <Image
-                src={currentImage?.src || "/gallery/1.png"}
+                src={currentImage?.src || "/gallery/bramble-rooftop-bar-bangalore.png"}
                 alt={currentImage?.alt || "Gallery image"}
                 fill
                 sizes="(max-width: 1024px) 100vw, 80vw"

@@ -20,31 +20,49 @@ import {
   Utensils,
 } from "lucide-react";
 
-const GALLERY = Array.from({ length: 8 }).map((_, i) => ({
-  src: `/gallery/${i + 1}.png`,
-  alt:
-    [
-      "Bramble rooftop bar Marathahalli Bangalore",
-      "Signature cocktails at Bramble Kitchen & Bar Bangalore",
-      "Glocal cuisine at Bramble rooftop restaurant Bangalore",
-      "Live ambience at Bramble Kitchen & Bar Marathahalli",
-      "Nightlife at Bramble rooftop bar Bangalore",
-      "Food bites at Bramble Kitchen & Bar Bangalore",
-      "Elegant interiors at Bramble Kitchen & Bar",
-      "Weekend rooftop energy at Bramble Marathahalli",
-    ][i] || `Bramble Kitchen & Bar gallery image ${i + 1}`,
-  title:
-    [
-      "Rooftop Vibes",
-      "Signature Cocktails",
-      "Glocal Cuisine",
-      "Live Ambience",
-      "Night Mood",
-      "Best Bites",
-      "Elegant Interiors",
-      "Weekend Energy",
-    ][i] || `Gallery ${i + 1}`,
-}));
+const GALLERY = [
+  {
+    src: "/gallery/bramble-rooftop-bar-bangalore.png",
+    alt: "Bramble rooftop bar ambience in Marathahalli Bangalore",
+    title: "Rooftop Vibes",
+  },
+  {
+    src: "/gallery/bramble-signature-cocktails.png",
+    alt: "Signature cocktails at Bramble Kitchen and Bar Bangalore",
+    title: "Signature Cocktails",
+  },
+  {
+    src: "/gallery/bramble-rooftop-dining-bangalore.png",
+    alt: "Rooftop dining experience at Bramble Kitchen and Bar Bangalore",
+    title: "Rooftop Dining",
+  },
+  {
+    src: "/gallery/bramble-nightlife-ambience.png",
+    alt: "Nightlife ambience at Bramble rooftop bar Marathahalli",
+    title: "Nightlife Ambience",
+  },
+  {
+    src: "/gallery/bramble-bar-food-bites.png",
+    alt: "Delicious bar food and bites at Bramble Kitchen and Bar",
+    title: "Food Bites",
+  },
+ 
+  {
+    src: "/gallery/bramble-craft-cocktail-bar.png",
+    alt: "Craft cocktail bar experience at Bramble Kitchen and Bar",
+    title: "Craft Cocktails",
+  },
+  {
+    src: "/gallery/bramble-rooftop-evening-vibes.png",
+    alt: "Evening rooftop vibes at Bramble Kitchen and Bar Bangalore",
+    title: "Evening Vibes",
+  },
+  {
+    src: "/gallery/bramble-marathahalli-bar-ambience.png",
+    alt: "Bramble bar ambience in Marathahalli Bangalore rooftop restaurant",
+    title: "Bar Ambience",
+  },
+];
 
 const LOCATIONS = [
   {
@@ -222,7 +240,7 @@ Thank you.`
           <div className="absolute inset-0">
             <div className="absolute inset-0 md:hidden">
               <Image
-                src="/gallery/1.png"
+                src="/gallery/bramble-rooftop-bar-bangalore.png"
                 alt="Bramble rooftop bar Marathahalli Bangalore"
                 fill
                 priority
@@ -370,7 +388,7 @@ Thank you.`
 
                 <div className="relative min-h-[320px] sm:min-h-[700px] lg:min-h-[700px]">
                   <Image
-                    src="/offer2.png"
+                    src="/offerbramble-nightlife-ambience.png"
                     alt="Bramble special offer happy hours Bangalore"
                     fill
                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -387,7 +405,7 @@ Thank you.`
         <section id="about" className="relative section-alt py-16 sm:py-20">
           <div className="absolute inset-0">
             <Image
-              src="/gallery/7.png"
+              src="/gallery/bramble-marathahalli-bar-ambience.png"
               alt="Bramble Kitchen & Bar rooftop ambience in Marathahalli"
               fill
               sizes="100vw"
@@ -515,7 +533,7 @@ Thank you.`
                   <div className="card-dark overflow-hidden p-3">
                     <div className="relative overflow-hidden rounded-2xl">
                       <Image
-                        src="/gallery/1.png"
+                        src="/gallery/bramble-rooftop-bar-bangalore.png"
                         alt="Bramble rooftop ambience and cocktails in Bangalore"
                         width={1200}
                         height={1600}
@@ -658,7 +676,7 @@ Thank you.`
         <section id="gallery" className="relative section-soft py-16 sm:py-20">
           <div className="absolute inset-0">
             <Image
-              src="/gallery/2.png"
+              src="/gallery/bramble-nightlife-ambience.png"
               alt="Bramble cocktail bar and rooftop gallery Bangalore"
               fill
               sizes="100vw"
@@ -841,7 +859,7 @@ Thank you.`
         <section id="location" className="relative overflow-hidden py-16 sm:py-20">
           <div className="absolute inset-0">
             <Image
-              src="/gallery/1.png"
+              src="/gallery/bramble-rooftop-bar-bangalore.png"
               alt="Bramble rooftop bar location in Marathahalli Bangalore"
               fill
               sizes="100vw"
