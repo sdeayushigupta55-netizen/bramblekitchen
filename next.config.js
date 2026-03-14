@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
   compress: true,
-  output: "export",   // This creates static export
+  output: "export",
   images: {
-    unoptimized: true, // required for static export
+    unoptimized: true,
   },
 };
 
