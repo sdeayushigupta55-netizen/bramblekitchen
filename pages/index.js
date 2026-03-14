@@ -297,7 +297,7 @@ Thank you.`
                 className="object-cover"
               />
 
-              {/* {showHeroVideo && (
+              {showHeroVideo && (
                 <video
                   autoPlay
                   muted
@@ -311,7 +311,7 @@ Thank you.`
                   <source src="/gallery/LaunchVideo.webm" type="video/webm" />
                   <source src="/gallery/LaunchVideo.mp4" type="video/mp4" />
                 </video>
-              )} */}
+              )}
             </div>
 
             <div className="absolute inset-0 bg-black/55" />
